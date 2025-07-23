@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gun Club Parking - Sistema de Reportes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a1a1a 100%);
+            color: white;
+            padding: 30px;
+        }
+        
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 15px;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-inner {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .company-title h1 {
+            font-size: 2.8em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .company-title p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin: 5px 0 0 0;
+        }
+        
+        .system-info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #ff6b35;
+        }
+        
+        .system-info h2 {
+            font-size: 1.6em;
+            margin: 0 0 10px 0;
+            color: #ff6b35;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .filters-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #dee2e6;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .filters-title {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-group select, 
+        .filter-group input {
+            padding: 14px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .filter-group select:focus, 
+        .filter-group input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-top: 5px solid #ff6b35;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, transparent 100%);
+            border-radius: 0 0 0 100px;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .kpi-card h3 {
+            color: #2d3748;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .kpi-value {
+            font-size: 2.8em;
+            font-weight: bold;
+            color: #ff6b35;
+            margin: 15px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .kpi-subtitle {
+            color: #6c757d;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .report-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-top: 30px;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a1a1a 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .report-header h3 {
+            font-size: 1.5em;
+            margin: 0;
+        }
+        
+        .report-content {
+            padding: 30px;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: white;
+        }
+        
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: 600;
+            color: #2d3748;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 107, 53, 0.05);
+        }
+        
+        .currency {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b35;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .company-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="company-info">
+                <div class="logo">
+                    <div class="logo-inner">GCP</div>
+                </div>
+                <div class="company-title">
+                    <h1>Gun Club Parking</h1>
+                    <p>Sistema de Gestión y Reportes de Parqueadero</p>
+                </div>
+            </div>
+            
+            <div class="system-info">
+                <h2>📊 Reporte de Pagos Validados</h2>
+                <p>Análisis de ingresos por empresa, mes y tipo de pago - Dashboard Ejecutivo</p>
+                <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+                    <strong>Módulo:</strong> Facturación y Pagos | <strong>Versión:</strong> 3.2.1 | <strong>Usuario:</strong> Admin
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="filters-section">
+                <div class="filters-title">
+                    🔍 Filtros de Consulta
+                </div>
+                
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label>🏢 Empresa Cliente</label>
+                        <select id="empresaFilter">
+                            <option value="">Todas las Empresas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>📅 Fecha Inicial</label>
+                        <input type="date" id="fechaInicial">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>📅 Fecha Final</label>
+                        <input type="date" id="fechaFinal">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>💳 Tipo de Pago</label>
+                        <select id="tipoPagoFilter">
+                            <option value="">Todos los Tipos</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>👤 Usuario Responsable</label>
+                        <select id="usuarioFilter">
+                            <option value="">Todos los Usuarios</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>🏙️ Ciudad</label>
+                        <select id="ciudadFilter">
+                            <option value="">Todas las Ciudades</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn" onclick="generateReport()">📊 Generar Reporte</button>
+                    <button class="btn btn-export" onclick="exportData()">📑 Exportar CSV</button>
+                    <button class="btn btn-export" onclick="exportPowerBI()">⚡ Exportar para Power BI</button>
+                    <button class="btn btn-clear" onclick="clearFilters()">🗑️ Limpiar Filtros</button>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Procesando consulta de pagos validados...</p>
+            </div>
+            
+            <div class="dashboard" id="dashboard" style="display: none;">
+                <div class="kpi-card">
+                    <h3>💰 Total Ingresos</h3>
+                    <div class="kpi-value" id="totalIngresos">$0</div>
+                    <div class="kpi-subtitle">Pagos validados en el período</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <h3>📄 Total Transacciones</h3>
+                    <div class="kpi-value" id="totalTransacciones">0</div>
+                    <div class="kpi-subtitle">Pagos procesados exitosamente</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <h3>🏢 Empresas Activas</h3>
+                    <div class="kpi-value" id="empresasActivas">0</div>
+                    <div class="kpi-subtitle">Clientes con pagos en el período</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <h3>📊 Promedio Mensual</h3>
+                    <div class="kpi-value" id="promedioMensual">$0</div>
+                    <div class="kpi-subtitle">Ingreso promedio por mes</div>
+                </div>
+            </div>
+            
+            <div class="report-section" id="reportSection" style="display: none;">
+                <div class="report-header">
+                    <h3>📋 Detalle de Pagos Validados por Empresa y Mes</h3>
+                </div>
+                <div class="report-content">
+                    <div class="table-wrapper">
+                        <table id="reportTable">
+                            <thead>
+                                <tr>
+                                    <th>Empresa</th>
+                                    <th>Ciudad</th>
+                                    <th>Mes</th>
+                                    <th>Tipo Pago</th>
+                                    <th>Cantidad</th>
+                                    <th>Monto Total</th>
+                                    <th>Usuario</th>
+                                    <th>Promedio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos simulados basados en la estructura real del parqueadero
+        const empresasData = [
+            'Transportes Bogotá S.A.S', 'Logística Medellín Ltda', 'Carga Express Cali', 
+            'Distribuidora Nacional', 'Flota Empresarial', 'Servicios de Transporte Unidos',
+            'Cargo Solutions', 'Transporte Eficiente', 'Logística Integral', 'Movilidad Urbana'
+        ];
+        
+        const ciudadesData = [
+            'Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga'
+        ];
+        
+        const tiposPago = [
+            'Efectivo', 'Tarjeta Débito', 'Tarjeta Crédito', 'Transferencia', 'PSE', 'Nequi', 'Daviplata'
+        ];
+        
+        const usuarios = [
+            'Carlos Administrador', 'María Supervisora', 'Juan Operador', 'Ana Cajera', 
+            'Luis Coordinador', 'Sofia Gestora', 'Diego Supervisor'
+        ];
+        
+        const meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        
+        let reportData = [];
+        
+        // Inicializar formulario
+        function initializeForm() {
+            // Llenar select de empresas
+            const empresaSelect = document.getElementById('empresaFilter');
+            empresasData.forEach(empresa => {
+                const option = document.createElement('option');
+                option.value = empresa;
+                option.textContent = empresa;
+                empresaSelect.appendChild(option);
+            });
+            
+            // Llenar select de tipos de pago
+            const tipoPagoSelect = document.getElementById('tipoPagoFilter');
+            tiposPago.forEach(tipo => {
+                const option = document.createElement('option');
+                option.value = tipo;
+                option.textContent = tipo;
+                tipoPagoSelect.appendChild(option);
+            });
+            
+            // Llenar select de usuarios
+            const usuarioSelect = document.getElementById('usuarioFilter');
+            usuarios.forEach(usuario => {
+                const option = document.createElement('option');
+                option.value = usuario;
+                option.textContent = usuario;
+                usuarioSelect.appendChild(option);
+            });
+            
+            // Llenar select de ciudades
+            const ciudadSelect = document.getElementById('ciudadFilter');
+            ciudadesData.forEach(ciudad => {
+                const option = document.createElement('option');
+                option.value = ciudad;
+                option.textContent = ciudad;
+                ciudadSelect.appendChild(option);
+            });
+            
+            // Establecer fechas por defecto
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            document.getElementById('fechaInicial').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('fechaFinal').value = today.toISOString().split('T')[0];
+        }
+        
+        // Generar datos simulados realistas para el parqueadero
+        function generateParkingData() {
+            const data = [];
+            const currentDate = new Date();
+            const startDate = new Date(currentDate.getFullYear(), 0, 1); // Enero del año actual
+            
+            for (let i = 0; i < 150; i++) {
+                const randomDate = new Date(startDate.getTime() + Math.random() * (currentDate.getTime() - startDate.getTime()));
+                const empresa = empresasData[Math.floor(Math.random() * empresasData.length)];
+                const ciudad = ciudadesData[Math.floor(Math.random() * ciudadesData.length)];
+                const tipoPago = tiposPago[Math.floor(Math.random() * tiposPago.length)];
+                const usuario = usuarios[Math.floor(Math.random() * usuarios.length)];
+                const mes = meses[randomDate.getMonth()];
+                
+                // Generar cantidades y montos realistas para parqueadero
+                const cantidad = Math.floor(Math.random() * 50) + 5; // Entre 5 y 55 vehículos
+                const tarifaBase = Math.floor(Math.random() * 8000) + 2000; // Entre $2,000 y $10,000 por vehículo
+                const montoTotal = cantidad * tarifaBase;
+                
+                data.push({
+                    empresa: empresa,
+                    ciudad: ciudad,
+                    mes: mes,
+                    fecha: randomDate,
+                    tipoPago: tipoPago,
+                    cantidad: cantidad,
+                    montoTotal: montoTotal,
+                    usuario: usuario,
+                    promedio: Math.round(montoTotal / cantidad)
+                });
+            }
+            
+            return data;
+        }
+        
+        // Aplicar filtros
+        function applyFilters(data) {
+            const empresaFilter = document.getElementById('empresaFilter').value;
+            const fechaInicial = document.getElementById('fechaInicial').value;
+            const fechaFinal = document.getElementById('fechaFinal').value;
+            const tipoPagoFilter = document.getElementById('tipoPagoFilter').value;
+            const usuarioFilter = document.getElementById('usuarioFilter').value;
+            const ciudadFilter = document.getElementById('ciudadFilter').value;
+            
+            return data.filter(item => {
+                const matchEmpresa = !empresaFilter || item.empresa === empresaFilter;
+                const matchTipoPago = !tipoPagoFilter || item.tipoPago === tipoPagoFilter;
+                const matchUsuario = !usuarioFilter || item.usuario === usuarioFilter;
+                const matchCiudad = !ciudadFilter || item.ciudad === ciudadFilter;
+                
+                let matchFecha = true;
+                if (fechaInicial || fechaFinal) {
+                    const itemDate = item.fecha;
+                    if (fechaInicial) matchFecha = matchFecha && itemDate >= new Date(fechaInicial);
+                    if (fechaFinal) matchFecha = matchFecha && itemDate <= new Date(fechaFinal);
+                }
+                
+                return matchEmpresa && matchTipoPago && matchUsuario && matchCiudad && matchFecha;
+            });
+        }
+        
+        // Generar reporte
+        function generateReport() {
+            const loading = document.getElementById('loading');
+            const dashboard = document.getElementById('dashboard');
+            const reportSection = document.getElementById('reportSection');
+            
+            loading.style.display = 'block';
+            dashboard.style.display = 'none';
+            reportSection.style.display = 'none';
+            
+            setTimeout(() => {
+                const allData = generateParkingData();
+                reportData = applyFilters(allData);
+                
+                updateDashboard(reportData);
+                updateReportTable(reportData);
+                
+                loading.style.display = 'none';
+                dashboard.style.display = 'grid';
+                reportSection.style.display = 'block';
+            }, 2000);
+        }
+        
+        // Actualizar dashboard KPIs
+        function updateDashboard(data) {
+            const totalIngresos = data.reduce((sum, item) => sum + item.montoTotal, 0);
+            const totalTransacciones = data.length;
+            const empresasUnicas = [...new Set(data.map(item => item.empresa))].length;
+            const promedioMensual = totalIngresos / 12;
+            
+            document.getElementById('totalIngresos').textContent = '$' + totalIngresos.toLocaleString('es-CO');
+            document.getElementById('totalTransacciones').textContent = totalTransacciones.toLocaleString('es-CO');
+            document.getElementById('empresasActivas').textContent = empresasUnicas;
+            document.getElementById('promedioMensual').textContent = '$' + Math.round(promedioMensual).toLocaleString('es-CO');
+        }
+        
+        // Actualizar tabla de reporte
+        function updateReportTable(data) {
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No se encontraron registros con los filtros aplicados</td></tr>';
+                return;
+            }
+            
+            data.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.empresa}</td>
+                    <td>${item.ciudad}</td>
+                    <td>${item.mes}</td>
+                    <td>${item.tipoPago}</td>
+                    <td>${item.cantidad}</td>
+                    <td class="currency">$${item.montoTotal.toLocaleString('es-CO')}</td>
+                    <td>${item.usuario}</td>
+                    <td class="currency">$${item.promedio.toLocaleString('es-CO')}</td>
+                `;
+            });
+        }
+        
+        // Exportar datos
+        function exportData() {
+            if (reportData.length === 0) {
+                alert('Primero genere un reporte para exportar');
+                return;
+            }
+            
+            const headers = ['Empresa', 'Ciudad', 'Mes', 'TipoPago', 'Cantidad', 'MontoTotal', 'Usuario', 'Promedio'];
+            let csvContent = headers.join(',') + '\n';
+            
+            reportData.forEach(item => {
+                const row = [
+                    `"${item.empresa}"`,
+                    `"${item.ciudad}"`,
+                    `"${item.mes}"`,
+                    `"${item.tipoPago}"`,
+                    item.cantidad,
+                    item.montoTotal,
+                    `"${item.usuario}"`,
+                    item.promedio
+                ];
+                csvContent += row.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'PagosValidados_GunClubParking.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Exportar para Power BI (4 tablas relacionadas)
+        function exportPowerBI() {
+            if (reportData.length === 0) {
+                alert('Primero genere un reporte para exportar');
+                return;
+            }
+            
+            // Tabla PagosValidados
+            const pagosHeaders = ['ID_Pago', 'ID_Empresa', 'Fecha', 'ID_TipoPago', 'Cantidad', 'MontoTotal', 'ID_Usuario'];
+            let pagosCSV = pagosHeaders.join(',') + '\n';
+            
+            reportData.forEach((item, index) => {
+                const row = [
+                    index + 1,
+                    empresasData.indexOf(item.empresa) + 1,
+                    item.fecha.toISOString().split('T')[0],
+                    tiposPago.indexOf(item.tipoPago) + 1,
+                    item.cantidad,
+                    item.montoTotal,
+                    usuarios.indexOf(item.usuario) + 1
+                ];
+                pagosCSV += row.join(',') + '\n';
+            });
+            
+            // Tabla Empresas
+            const empresasHeaders = ['ID_Empresa', 'NombreEmpresa', 'ID_Ciudad'];
+            let empresasCSV = empresasHeaders.join(',') + '\n';
+            empresasData.forEach((empresa, index) => {
+                const ciudadRandom = Math.floor(Math.random() * ciudadesData.length);
+                empresasCSV += `${index + 1},"${empresa}",${ciudadRandom + 1}\n`;
+            });
+            
+            // Tabla Ciudades
+            const ciudadesHeaders = ['ID_Ciudad', 'NombreCiudad'];
+            let ciudadesCSV = ciudadesHeaders.join(',') + '\n';
+            ciudadesData.forEach((ciudad, index) => {
+                ciudadesCSV += `${index + 1},"${ciudad}"\n`;
+            });
+            
+            // Tabla TipoPago
+            const tiposPagoHeaders = ['ID_TipoPago', 'NombreTipoPago'];
+            let tiposPagoCSV = tiposPagoHeaders.join(',') + '\n';
+            tiposPago.forEach((tipo, index) => {
+                tiposPagoCSV += `${index + 1},"${tipo}"\n`;
+            });
+            
+            // Descargar archivos
+            downloadCSVFile(pagosCSV, 'T_PagosValidados.csv');
+            setTimeout(() => downloadCSVFile(empresasCSV, 'T_Empresas.csv'), 500);
+            setTimeout(() => downloadCSVFile(ciudadesCSV, 'T_Ciudades.csv'), 1000);
+            setTimeout(() => downloadCSVFile(tiposPagoCSV, 'T_TipoPago.csv'), 1500);
+            
+            alert('¡Archivos exportados! Se descargaron 4 tablas para Power BI:\n- T_PagosValidados.csv\n- T_Empresas.csv\n- T_Ciudades.csv\n- T_TipoPago.csv');
+        }
+        
+        // Función auxiliar para descargar CSV
+        function downloadCSVFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Limpiar filtros
+        function clearFilters() {
+            document.getElementById('empresaFilter').value = '';
+            document.getElementById('tipoPagoFilter').value = '';
+            document.getElementById('usuarioFilter').value = '';
+            document.getElementById('ciudadFilter').value = '';
+            
+            // Restablecer fechas
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            document.getElementById('fechaInicial').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('fechaFinal').value = today.toISOString().split('T')[0];
+            
+            // Ocultar resultados
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('reportSection').style.display = 'none';
+        }
+        
+        // Inicializar la aplicación
+        initializeForm();
+    </script>
+</body>
+</html>
