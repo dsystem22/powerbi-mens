@@ -3,814 +3,615 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gun Club Parking - Sistema de Reportes</title>
+    <title>Reporte de Personas Autorizadas</title>
+    
+    <!-- CDN Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
             padding: 20px;
         }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #2d3748 0%, #1a1a1a 100%);
-            color: white;
-            padding: 30px;
-        }
-        
-        .company-info {
-            display: flex;
-            align-items: center;
-            gap: 25px;
+
+        .filters {
             margin-bottom: 20px;
         }
-        
-        .logo {
-            background: rgba(255,255,255,0.15);
-            padding: 15px;
-            border-radius: 15px;
-            width: 90px;
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .logo-inner {
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-        
-        .company-title h1 {
-            font-size: 2.8em;
-            margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .company-title p {
-            font-size: 1.2em;
-            opacity: 0.9;
-            margin: 5px 0 0 0;
-        }
-        
-        .system-info {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-            border-left: 4px solid #ff6b35;
-        }
-        
-        .system-info h2 {
-            font-size: 1.6em;
-            margin: 0 0 10px 0;
-            color: #ff6b35;
-        }
-        
-        .content {
-            padding: 40px;
-        }
-        
-        .filters-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border: 2px solid #dee2e6;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .filters-title {
-            font-size: 1.5em;
-            color: #2d3748;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-        
+
         .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            margin-bottom: 10px;
         }
-        
-        .filter-group label {
-            font-weight: 600;
-            color: #2d3748;
-            font-size: 0.95em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .filter-group select, 
-        .filter-group input {
-            padding: 14px;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        .filter-group select:focus, 
-        .filter-group input:focus {
-            outline: none;
-            border-color: #ff6b35;
-            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 5px;
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-        }
-        
-        .btn-export {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        }
-        
-        .btn-clear {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-        }
-        
-        .actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
-        }
-        
-        .kpi-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-top: 5px solid #ff6b35;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, transparent 100%);
-            border-radius: 0 0 0 100px;
-        }
-        
-        .kpi-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-        
-        .kpi-card h3 {
-            color: #2d3748;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .kpi-value {
-            font-size: 2.8em;
+
+        label {
+            display: block;
+            margin-bottom: 5px;
             font-weight: bold;
-            color: #ff6b35;
-            margin: 15px 0;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
-        
-        .kpi-subtitle {
-            color: #6c757d;
-            font-size: 0.9em;
-            font-weight: 500;
+
+        input[type="date"] {
+            padding: 5px;
+            width: 200px;
         }
-        
-        .report-section {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-top: 30px;
+
+        .actions {
+            margin-top: 20px;
         }
-        
-        .report-header {
-            background: linear-gradient(135deg, #2d3748 0%, #1a1a1a 100%);
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
-        .report-header h3 {
-            font-size: 1.5em;
-            margin: 0;
-        }
-        
-        .report-content {
-            padding: 30px;
-        }
-        
-        .table-wrapper {
-            overflow-x: auto;
-            max-height: 600px;
-            overflow-y: auto;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
+
+        .btn {
+            padding: 10px 20px;
             font-size: 14px;
-            background: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #0078d4;
+            color: white;
         }
-        
-        th, td {
-            padding: 15px 12px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        th {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            font-weight: 600;
-            color: #2d3748;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        tr:hover {
-            background-color: rgba(255, 107, 53, 0.05);
-        }
-        
-        .currency {
-            color: #28a745;
-            font-weight: 600;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #ff6b35;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #6c757d;
-            font-style: italic;
-        }
-        
-        @media (max-width: 768px) {
-            .company-info {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .content {
-                padding: 20px;
-            }
+
+        .btn:hover {
+            background-color: #005fa3;
         }
     </style>
 </head>
 <body>
+    <div class="filters">
+        <div class="filter-group">
+            <label for="fechaInicio">Fecha Inicio Desde:</label>
+            <input type="date" id="fechaInicio" name="fechaInicio">
+        </div>
+        <div class="filter-group">
+            <label for="fechaFin">Fecha Inicio Hasta:</label>
+            <input type="date" id="fechaFin" name="fechaFin">
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn" onclick="loadData()">📄 Reporte</button>
+    </div>
+
+    <script>
+        function applyFilters() {
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+
+            filteredData = allData.filter(item => {
+                const fechaInicioItem = new Date(item.FechaInicio);
+                return (!fechaInicio || fechaInicioItem >= new Date(fechaInicio)) &&
+                       (!fechaFin || fechaInicioItem <= new Date(fechaFin));
+            });
+
+            renderTable();
+            updateStats();
+        }
+
+        document.getElementById('fechaInicio').addEventListener('change', applyFilters);
+        document.getElementById('fechaFin').addEventListener('change', applyFilters);
+
+        function loadData() {
+            alert('Aquí iría la lógica para generar el reporte.');
+        }
+    </script>
+</body>
+</html>
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjUwIiB2aWV3Qm94PSIwIDAgMTAwIDUwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMDA3OEQ0Ii8+Cjx0ZXh0IHg9IjUwIiB5PSIzMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TE9HTzwvdGV4dD4KPHN2Zz4K" alt="Logo" class="logo">
+            <h1 class="title">Reporte de Personas Autorizadas</h1>
+        </div>
+        <div style="font-size: 14px; color: #666666;">
+            <span id="lastUpdate">Última actualización: --</span>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="header">
-            <div class="company-info">
-                <div class="logo">
-                    <div class="logo-inner">GCP</div>
+        <!-- Estadísticas -->
+        <div class="stats">
+            <div class="stat-card">
+                <h4>Total Personas</h4>
+                <div class="number" id="totalPersonas">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Activos</h4>
+                <div class="number" id="totalActivos" style="color: #28a745;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Vencidos</h4>
+                <div class="number" id="totalVencidos" style="color: #dc3545;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Por Vencer (30 días)</h4>
+                <div class="number" id="totalPorVencer" style="color: #fd7e14;">0</div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <h3>Filtros</h3>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="fechaInicio">Fecha Inicio Desde:</label>
+                    <input type="date" id="fechaInicio" name="fechaInicio">
                 </div>
-                <div class="company-title">
-                    <h1>Gun Club Parking</h1>
-                    <p>Sistema de Gestión y Reportes de Parqueadero</p>
+                <div class="filter-group">
+                    <label for="fechaFin">Fecha Inicio Hasta:</label>
+                    <input type="date" id="fechaFin" name="fechaFin">
+                </div>
+                <div class="filter-group">
+                    <label for="estado">Estado:</label>
+                    <select id="estado" name="estado">
+                        <option value="">Todos</option>
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                        <option value="Vencido">Vencido</option>
+                        <option value="Por Vencer">Por Vencer</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="empresa">Empresa:</label>
+                    <select id="empresa" name="empresa">
+                        <option value="">Todas</option>
+                    </select>
                 </div>
             </div>
-            
-            <div class="system-info">
-                <h2>📊 Reporte de Pagos Validados</h2>
-                <p>Análisis de ingresos por empresa, mes y tipo de pago - Dashboard Ejecutivo</p>
-                <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
-                    <strong>Módulo:</strong> Facturación y Pagos | <strong>Versión:</strong> 3.2.1 | <strong>Usuario:</strong> Admin
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="documento">Documento:</label>
+                    <input type="text" id="documento" placeholder="Buscar por documento">
+                </div>
+                <div class="filter-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" placeholder="Buscar por nombre">
+                </div>
+                <div class="filter-group">
+                    <label for="autorizacion">Autorización:</label>
+                    <select id="autorizacion" name="autorizacion">
+                        <option value="">Todas</option>
+                    </select>
                 </div>
             </div>
         </div>
-        
-        <div class="content">
-            <div class="filters-section">
-                <div class="filters-title">
-                    🔍 Filtros de Consulta
-                </div>
-                
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label>🏢 Empresa Cliente</label>
-                        <select id="empresaFilter">
-                            <option value="">Todas las Empresas</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>📅 Fecha Inicial</label>
-                        <input type="date" id="fechaInicial">
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>📅 Fecha Final</label>
-                        <input type="date" id="fechaFinal">
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>💳 Tipo de Pago</label>
-                        <select id="tipoPagoFilter">
-                            <option value="">Todos los Tipos</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>👤 Usuario Responsable</label>
-                        <select id="usuarioFilter">
-                            <option value="">Todos los Usuarios</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>🏙️ Ciudad</label>
-                        <select id="ciudadFilter">
-                            <option value="">Todas las Ciudades</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="actions">
-                    <button class="btn" onclick="generateReport()">📊 Generar Reporte</button>
-                    <button class="btn btn-export" onclick="exportData()">📑 Exportar CSV</button>
-                    <button class="btn btn-export" onclick="exportPowerBI()">⚡ Exportar para Power BI</button>
-                    <button class="btn btn-clear" onclick="clearFilters()">🗑️ Limpiar Filtros</button>
-                </div>
+
+        <!-- Acciones -->
+        <div class="actions">
+            <button class="btn btn-primary" onclick="loadData()">
+                🔄 Actualizar Datos
+            </button>
+            <button class="btn btn-success" onclick="exportToExcel()">
+                📊 Exportar a Excel
+            </button>
+            <button class="btn btn-danger" onclick="exportToPDF()">
+                📄 Exportar a PDF
+            </button>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-container">
+            <div id="loading" class="loading">
+                Cargando datos...
             </div>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Procesando consulta de pagos validados...</p>
+            <div id="error" class="error" style="display: none;">
+                Error al cargar los datos. Por favor, verifique la conexión a la base de datos.
             </div>
-            
-            <div class="dashboard" id="dashboard" style="display: none;">
-                <div class="kpi-card">
-                    <h3>💰 Total Ingresos</h3>
-                    <div class="kpi-value" id="totalIngresos">$0</div>
-                    <div class="kpi-subtitle">Pagos validados en el período</div>
-                </div>
-                
-                <div class="kpi-card">
-                    <h3>📄 Total Transacciones</h3>
-                    <div class="kpi-value" id="totalTransacciones">0</div>
-                    <div class="kpi-subtitle">Pagos procesados exitosamente</div>
-                </div>
-                
-                <div class="kpi-card">
-                    <h3>🏢 Empresas Activas</h3>
-                    <div class="kpi-value" id="empresasActivas">0</div>
-                    <div class="kpi-subtitle">Clientes con pagos en el período</div>
-                </div>
-                
-                <div class="kpi-card">
-                    <h3>📊 Promedio Mensual</h3>
-                    <div class="kpi-value" id="promedioMensual">$0</div>
-                    <div class="kpi-subtitle">Ingreso promedio por mes</div>
-                </div>
-            </div>
-            
-            <div class="report-section" id="reportSection" style="display: none;">
-                <div class="report-header">
-                    <h3>📋 Detalle de Pagos Validados por Empresa y Mes</h3>
-                </div>
-                <div class="report-content">
-                    <div class="table-wrapper">
-                        <table id="reportTable">
-                            <thead>
-                                <tr>
-                                    <th>Empresa</th>
-                                    <th>Ciudad</th>
-                                    <th>Mes</th>
-                                    <th>Tipo Pago</th>
-                                    <th>Cantidad</th>
-                                    <th>Monto Total</th>
-                                    <th>Usuario</th>
-                                    <th>Promedio</th>
-                                </tr>
-                            </thead>
-                            <tbody id="reportTableBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <table class="table" id="dataTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre y Apellidos</th>
+                        <th>Autorización</th>
+                        <th>Empresa</th>
+                        <th>ID Tarjeta</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Estado</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Placas</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div id="noData" class="no-data" style="display: none;">
+                No se encontraron datos con los filtros aplicados.
             </div>
         </div>
     </div>
 
     <script>
-        // Datos simulados basados en la estructura real del parqueadero
-        const empresasData = [
-            'Transportes Bogotá S.A.S', 'Logística Medellín Ltda', 'Carga Express Cali', 
-            'Distribuidora Nacional', 'Flota Empresarial', 'Servicios de Transporte Unidos',
-            'Cargo Solutions', 'Transporte Eficiente', 'Logística Integral', 'Movilidad Urbana'
-        ];
-        
-        const ciudadesData = [
-            'Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga'
-        ];
-        
-        const tiposPago = [
-            'Efectivo', 'Tarjeta Débito', 'Tarjeta Crédito', 'Transferencia', 'PSE', 'Nequi', 'Daviplata'
-        ];
-        
-        const usuarios = [
-            'Carlos Administrador', 'María Supervisora', 'Juan Operador', 'Ana Cajera', 
-            'Luis Coordinador', 'Sofia Gestora', 'Diego Supervisor'
-        ];
-        
-        const meses = [
-            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-        ];
-        
-        let reportData = [];
-        
-        // Inicializar formulario
-        function initializeForm() {
-            // Llenar select de empresas
-            const empresaSelect = document.getElementById('empresaFilter');
-            empresasData.forEach(empresa => {
-                const option = document.createElement('option');
-                option.value = empresa;
-                option.textContent = empresa;
-                empresaSelect.appendChild(option);
-            });
-            
-            // Llenar select de tipos de pago
-            const tipoPagoSelect = document.getElementById('tipoPagoFilter');
-            tiposPago.forEach(tipo => {
-                const option = document.createElement('option');
-                option.value = tipo;
-                option.textContent = tipo;
-                tipoPagoSelect.appendChild(option);
-            });
-            
-            // Llenar select de usuarios
-            const usuarioSelect = document.getElementById('usuarioFilter');
-            usuarios.forEach(usuario => {
-                const option = document.createElement('option');
-                option.value = usuario;
-                option.textContent = usuario;
-                usuarioSelect.appendChild(option);
-            });
-            
-            // Llenar select de ciudades
-            const ciudadSelect = document.getElementById('ciudadFilter');
-            ciudadesData.forEach(ciudad => {
-                const option = document.createElement('option');
-                option.value = ciudad;
-                option.textContent = ciudad;
-                ciudadSelect.appendChild(option);
-            });
-            
-            // Establecer fechas por defecto
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            document.getElementById('fechaInicial').value = firstDay.toISOString().split('T')[0];
-            document.getElementById('fechaFinal').value = today.toISOString().split('T')[0];
-        }
-        
-        // Generar datos simulados realistas para el parqueadero
-        function generateParkingData() {
-            const data = [];
-            const currentDate = new Date();
-            const startDate = new Date(currentDate.getFullYear(), 0, 1); // Enero del año actual
-            
-            for (let i = 0; i < 150; i++) {
-                const randomDate = new Date(startDate.getTime() + Math.random() * (currentDate.getTime() - startDate.getTime()));
-                const empresa = empresasData[Math.floor(Math.random() * empresasData.length)];
-                const ciudad = ciudadesData[Math.floor(Math.random() * ciudadesData.length)];
-                const tipoPago = tiposPago[Math.floor(Math.random() * tiposPago.length)];
-                const usuario = usuarios[Math.floor(Math.random() * usuarios.length)];
-                const mes = meses[randomDate.getMonth()];
-                
-                // Generar cantidades y montos realistas para parqueadero
-                const cantidad = Math.floor(Math.random() * 50) + 5; // Entre 5 y 55 vehículos
-                const tarifaBase = Math.floor(Math.random() * 8000) + 2000; // Entre $2,000 y $10,000 por vehículo
-                const montoTotal = cantidad * tarifaBase;
-                
-                data.push({
-                    empresa: empresa,
-                    ciudad: ciudad,
-                    mes: mes,
-                    fecha: randomDate,
-                    tipoPago: tipoPago,
-                    cantidad: cantidad,
-                    montoTotal: montoTotal,
-                    usuario: usuario,
-                    promedio: Math.round(montoTotal / cantidad)
+        // Variables globales
+        let allData = [];
+        let filteredData = [];
+
+        // Configuración de conexión a la base de datos
+        const dbConfig = {
+            server: 'tu-servidor.database.windows.net', // Cambia por tu servidor
+            database: 'tu-base-de-datos', // Cambia por tu base de datos
+            user: 'tu-usuario', // Cambia por tu usuario
+            password: 'tu-contraseña', // Cambia por tu contraseña
+            encrypt: true,
+            trustServerCertificate: false
+        };
+
+        // Query SQL
+        const sqlQuery = `
+            SELECT 
+                pa.Documento,
+                a.NombreAutorizacion,
+                pa.NombreApellidos,
+                pa.IdTarjeta,
+                pa.NombreEmpresa,
+                pa.FechaCreacion,
+                pa.FechaInicio,
+                pa.FechaFin,
+                pa.Telefono,
+                pa.Email,
+                pa.Estado,
+                CONCAT_WS(', ', 
+                    NULLIF(pa.Placa1, ''), NULLIF(pa.Placa2, ''), NULLIF(pa.Placa3, ''), 
+                    NULLIF(pa.Placa4, ''), NULLIF(pa.Placa5, ''), NULLIF(pa.Placa6, ''),
+                    NULLIF(pa.Placa7, ''), NULLIF(pa.Placa8, ''), NULLIF(pa.Placa9, ''),
+                    NULLIF(pa.Placa10, ''), NULLIF(pa.Placa11, ''), NULLIF(pa.Placa12, ''),
+                    NULLIF(pa.Placa13, '')
+                ) as Placas,
+                CASE 
+                    WHEN pa.FechaFin < GETDATE() THEN 'Vencido'
+                    WHEN pa.FechaFin >= GETDATE() AND pa.FechaFin <= DATEADD(DAY, 30, GETDATE()) THEN 'Por Vencer'
+                    WHEN pa.Estado = 'Activo' THEN 'Activo'
+                    ELSE 'Inactivo'
+                END as EstadoCalculado
+            FROM dbo.T_PersonasAutorizadas pa
+            INNER JOIN dbo.T_Autorizaciones a ON pa.IdAutorizacion = a.IdAutorizacion
+            ORDER BY pa.FechaCreacion DESC
+        `;
+
+        // OPCIÓN 1: Para usar con API backend (Node.js/ASP.NET/PHP)
+        async function loadDataFromAPI() {
+            try {
+                showLoading(true);
+                hideError();
+
+                const response = await fetch('/api/personas-autorizadas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: sqlQuery
+                    })
                 });
-            }
-            
-            return data;
-        }
-        
-        // Aplicar filtros
-        function applyFilters(data) {
-            const empresaFilter = document.getElementById('empresaFilter').value;
-            const fechaInicial = document.getElementById('fechaInicial').value;
-            const fechaFinal = document.getElementById('fechaFinal').value;
-            const tipoPagoFilter = document.getElementById('tipoPagoFilter').value;
-            const usuarioFilter = document.getElementById('usuarioFilter').value;
-            const ciudadFilter = document.getElementById('ciudadFilter').value;
-            
-            return data.filter(item => {
-                const matchEmpresa = !empresaFilter || item.empresa === empresaFilter;
-                const matchTipoPago = !tipoPagoFilter || item.tipoPago === tipoPagoFilter;
-                const matchUsuario = !usuarioFilter || item.usuario === usuarioFilter;
-                const matchCiudad = !ciudadFilter || item.ciudad === ciudadFilter;
-                
-                let matchFecha = true;
-                if (fechaInicial || fechaFinal) {
-                    const itemDate = item.fecha;
-                    if (fechaInicial) matchFecha = matchFecha && itemDate >= new Date(fechaInicial);
-                    if (fechaFinal) matchFecha = matchFecha && itemDate <= new Date(fechaFinal);
+
+                if (!response.ok) {
+                    throw new Error('Error en la consulta');
                 }
+
+                const data = await response.json();
+                allData = data;
                 
-                return matchEmpresa && matchTipoPago && matchUsuario && matchCiudad && matchFecha;
+                populateFilters(allData);
+                applyFilters();
+                updateStats();
+                updateLastUpdate();
+                showLoading(false);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError();
+                showLoading(false);
+                loadSampleData();
+            }
+        }
+
+        // OPCIÓN 2: Para usar con archivo JSON estático
+        async function loadDataFromJSON() {
+            try {
+                showLoading(true);
+                hideError();
+
+                const response = await fetch('data/personas-autorizadas.json');
+                if (!response.ok) {
+                    throw new Error('Error cargando archivo JSON');
+                }
+
+                const data = await response.json();
+                allData = data;
+                
+                populateFilters(allData);
+                applyFilters();
+                updateStats();
+                updateLastUpdate();
+                showLoading(false);
+                
+            } catch (error) {
+                console.error('Error loading JSON:', error);
+                showError();
+                showLoading(false);
+                loadSampleData();
+            }
+        }
+
+        // OPCIÓN 3: Para usar con Google Sheets (alternativa simple)
+        async function loadDataFromGoogleSheets() {
+            try {
+                showLoading(true);
+                hideError();
+
+                // Reemplaza SHEET_ID con tu ID de Google Sheet
+                const SHEET_ID = 'TU_GOOGLE_SHEET_ID';
+                const API_KEY = 'TU_GOOGLE_API_KEY';
+                const RANGE = 'Sheet1!A:N'; // Ajusta el rango según tus datos
+                
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                // Convertir datos de Google Sheets a formato esperado
+                const headers = result.values[0];
+                const rows = result.values.slice(1);
+                
+                allData = rows.map(row => {
+                    const obj = {};
+                    headers.forEach((header, index) => {
+                        obj[header] = row[index] || '';
+                    });
+                    return obj;
+                });
+                
+                populateFilters(allData);
+                applyFilters();
+                updateStats();
+                updateLastUpdate();
+                showLoading(false);
+                
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                showError();
+                showLoading(false);
+                loadSampleData();
+            }
+        }
+
+        // Función principal que decide qué método usar
+        async function loadData() {
+            // Cambia aquí según tu implementación:
+            // loadDataFromAPI();     // Para backend con API
+            // loadDataFromJSON();    // Para archivo JSON estático
+            // loadDataFromGoogleSheets(); // Para Google Sheets
+            loadSampleData(); // Para datos de prueba
+        }
+
+        // Función para cargar datos de ejemplo (para demo)
+        function loadSampleData() {
+            allData = [
+                {
+                    Documento: '12345678',
+                    NombreApellidos: 'Juan Pérez García',
+                    NombreAutorizacion: 'Acceso Principal',
+                    NombreEmpresa: 'Empresa ABC',
+                    IdTarjeta: 'T001',
+                    FechaInicio: '2024-01-15',
+                    FechaFin: '2024-12-31',
+                    Telefono: '300-123-4567',
+                    Email: 'juan.perez@empresa.com',
+                    Estado: 'Activo',
+                    EstadoCalculado: 'Activo',
+                    Placas: 'ABC123, DEF456'
+                },
+                {
+                    Documento: '87654321',
+                    NombreApellidos: 'María López Silva',
+                    NombreAutorizacion: 'Acceso Temporal',
+                    NombreEmpresa: 'Empresa XYZ',
+                    IdTarjeta: 'T002',
+                    FechaInicio: '2024-06-01',
+                    FechaFin: '2024-08-15',
+                    Telefono: '300-987-6543',
+                    Email: 'maria.lopez@empresa.com',
+                    Estado: 'Activo',
+                    EstadoCalculado: 'Vencido',
+                    Placas: 'GHI789'
+                }
+            ];
+            
+            populateFilters(allData);
+            applyFilters();
+            updateStats();
+            updateLastUpdate();
+            showLoading(false);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('dataTable').style.display = show ? 'none' : 'table';
+            document.getElementById('noData').style.display = 'none';
+        }
+
+        function showError() {
+            document.getElementById('error').style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function populateFilters(data) {
+            // Poblar filtro de empresas
+            const empresas = [...new Set(data.map(item => item.NombreEmpresa))].sort();
+            const empresaSelect = document.getElementById('empresa');
+            empresaSelect.innerHTML = '<option value="">Todas</option>';
+            empresas.forEach(empresa => {
+                empresaSelect.innerHTML += `<option value="${empresa}">${empresa}</option>`;
+            });
+
+            // Poblar filtro de autorizaciones
+            const autorizaciones = [...new Set(data.map(item => item.NombreAutorizacion))].sort();
+            const autorizacionSelect = document.getElementById('autorizacion');
+            autorizacionSelect.innerHTML = '<option value="">Todas</option>';
+            autorizaciones.forEach(auth => {
+                autorizacionSelect.innerHTML += `<option value="${auth}">${auth}</option>`;
             });
         }
-        
-        // Generar reporte
-        function generateReport() {
-            const loading = document.getElementById('loading');
-            const dashboard = document.getElementById('dashboard');
-            const reportSection = document.getElementById('reportSection');
-            
-            loading.style.display = 'block';
-            dashboard.style.display = 'none';
-            reportSection.style.display = 'none';
-            
-            setTimeout(() => {
-                const allData = generateParkingData();
-                reportData = applyFilters(allData);
+
+        function applyFilters() {
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+            const estado = document.getElementById('estado').value;
+            const empresa = document.getElementById('empresa').value;
+            const documento = document.getElementById('documento').value.toLowerCase();
+            const nombre = document.getElementById('nombre').value.toLowerCase();
+            const autorizacion = document.getElementById('autorizacion').value;
+
+            filteredData = allData.filter(item => {
+                const fechaInicioItem = new Date(item.FechaInicio);
                 
-                updateDashboard(reportData);
-                updateReportTable(reportData);
-                
-                loading.style.display = 'none';
-                dashboard.style.display = 'grid';
-                reportSection.style.display = 'block';
-            }, 2000);
+                return (!fechaInicio || fechaInicioItem >= new Date(fechaInicio)) &&
+                       (!fechaFin || fechaInicioItem <= new Date(fechaFin)) &&
+                       (!estado || item.EstadoCalculado === estado) &&
+                       (!empresa || item.NombreEmpresa === empresa) &&
+                       (!documento || item.Documento.toLowerCase().includes(documento)) &&
+                       (!nombre || item.NombreApellidos.toLowerCase().includes(nombre)) &&
+                       (!autorizacion || item.NombreAutorizacion === autorizacion);
+            });
+
+            renderTable();
+            updateStats();
         }
-        
-        // Actualizar dashboard KPIs
-        function updateDashboard(data) {
-            const totalIngresos = data.reduce((sum, item) => sum + item.montoTotal, 0);
-            const totalTransacciones = data.length;
-            const empresasUnicas = [...new Set(data.map(item => item.empresa))].length;
-            const promedioMensual = totalIngresos / 12;
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
             
-            document.getElementById('totalIngresos').textContent = '$' + totalIngresos.toLocaleString('es-CO');
-            document.getElementById('totalTransacciones').textContent = totalTransacciones.toLocaleString('es-CO');
-            document.getElementById('empresasActivas').textContent = empresasUnicas;
-            document.getElementById('promedioMensual').textContent = '$' + Math.round(promedioMensual).toLocaleString('es-CO');
-        }
-        
-        // Actualizar tabla de reporte
-        function updateReportTable(data) {
-            const tbody = document.getElementById('reportTableBody');
-            tbody.innerHTML = '';
-            
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No se encontraron registros con los filtros aplicados</td></tr>';
+            if (filteredData.length === 0) {
+                document.getElementById('dataTable').style.display = 'none';
+                document.getElementById('noData').style.display = 'block';
                 return;
             }
-            
-            data.forEach(item => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${item.empresa}</td>
-                    <td>${item.ciudad}</td>
-                    <td>${item.mes}</td>
-                    <td>${item.tipoPago}</td>
-                    <td>${item.cantidad}</td>
-                    <td class="currency">$${item.montoTotal.toLocaleString('es-CO')}</td>
-                    <td>${item.usuario}</td>
-                    <td class="currency">$${item.promedio.toLocaleString('es-CO')}</td>
-                `;
-            });
+
+            document.getElementById('dataTable').style.display = 'table';
+            document.getElementById('noData').style.display = 'none';
+
+            tbody.innerHTML = filteredData.map(item => `
+                <tr>
+                    <td>${item.Documento}</td>
+                    <td>${item.NombreApellidos}</td>
+                    <td>${item.NombreAutorizacion}</td>
+                    <td>${item.NombreEmpresa}</td>
+                    <td>${item.IdTarjeta}</td>
+                    <td>${formatDate(item.FechaInicio)}</td>
+                    <td>${formatDate(item.FechaFin)}</td>
+                    <td><span class="status-${item.EstadoCalculado.toLowerCase().replace(' ', '-')}">${item.EstadoCalculado}</span></td>
+                    <td>${item.Telefono || ''}</td>
+                    <td>${item.Email || ''}</td>
+                    <td>${item.Placas || ''}</td>
+                </tr>
+            `).join('');
         }
-        
-        // Exportar datos
-        function exportData() {
-            if (reportData.length === 0) {
-                alert('Primero genere un reporte para exportar');
-                return;
-            }
-            
-            const headers = ['Empresa', 'Ciudad', 'Mes', 'TipoPago', 'Cantidad', 'MontoTotal', 'Usuario', 'Promedio'];
-            let csvContent = headers.join(',') + '\n';
-            
-            reportData.forEach(item => {
-                const row = [
-                    `"${item.empresa}"`,
-                    `"${item.ciudad}"`,
-                    `"${item.mes}"`,
-                    `"${item.tipoPago}"`,
-                    item.cantidad,
-                    item.montoTotal,
-                    `"${item.usuario}"`,
-                    item.promedio
-                ];
-                csvContent += row.join(',') + '\n';
-            });
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'PagosValidados_GunClubParking.csv');
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+
+        function updateStats() {
+            const total = filteredData.length;
+            const activos = filteredData.filter(item => item.EstadoCalculado === 'Activo').length;
+            const vencidos = filteredData.filter(item => item.EstadoCalculado === 'Vencido').length;
+            const porVencer = filteredData.filter(item => item.EstadoCalculado === 'Por Vencer').length;
+
+            document.getElementById('totalPersonas').textContent = total;
+            document.getElementById('totalActivos').textContent = activos;
+            document.getElementById('totalVencidos').textContent = vencidos;
+            document.getElementById('totalPorVencer').textContent = porVencer;
         }
-        
-        // Exportar para Power BI (4 tablas relacionadas)
-        function exportPowerBI() {
-            if (reportData.length === 0) {
-                alert('Primero genere un reporte para exportar');
-                return;
-            }
-            
-            // Tabla PagosValidados
-            const pagosHeaders = ['ID_Pago', 'ID_Empresa', 'Fecha', 'ID_TipoPago', 'Cantidad', 'MontoTotal', 'ID_Usuario'];
-            let pagosCSV = pagosHeaders.join(',') + '\n';
-            
-            reportData.forEach((item, index) => {
-                const row = [
-                    index + 1,
-                    empresasData.indexOf(item.empresa) + 1,
-                    item.fecha.toISOString().split('T')[0],
-                    tiposPago.indexOf(item.tipoPago) + 1,
-                    item.cantidad,
-                    item.montoTotal,
-                    usuarios.indexOf(item.usuario) + 1
-                ];
-                pagosCSV += row.join(',') + '\n';
-            });
-            
-            // Tabla Empresas
-            const empresasHeaders = ['ID_Empresa', 'NombreEmpresa', 'ID_Ciudad'];
-            let empresasCSV = empresasHeaders.join(',') + '\n';
-            empresasData.forEach((empresa, index) => {
-                const ciudadRandom = Math.floor(Math.random() * ciudadesData.length);
-                empresasCSV += `${index + 1},"${empresa}",${ciudadRandom + 1}\n`;
-            });
-            
-            // Tabla Ciudades
-            const ciudadesHeaders = ['ID_Ciudad', 'NombreCiudad'];
-            let ciudadesCSV = ciudadesHeaders.join(',') + '\n';
-            ciudadesData.forEach((ciudad, index) => {
-                ciudadesCSV += `${index + 1},"${ciudad}"\n`;
-            });
-            
-            // Tabla TipoPago
-            const tiposPagoHeaders = ['ID_TipoPago', 'NombreTipoPago'];
-            let tiposPagoCSV = tiposPagoHeaders.join(',') + '\n';
-            tiposPago.forEach((tipo, index) => {
-                tiposPagoCSV += `${index + 1},"${tipo}"\n`;
-            });
-            
-            // Descargar archivos
-            downloadCSVFile(pagosCSV, 'T_PagosValidados.csv');
-            setTimeout(() => downloadCSVFile(empresasCSV, 'T_Empresas.csv'), 500);
-            setTimeout(() => downloadCSVFile(ciudadesCSV, 'T_Ciudades.csv'), 1000);
-            setTimeout(() => downloadCSVFile(tiposPagoCSV, 'T_TipoPago.csv'), 1500);
-            
-            alert('¡Archivos exportados! Se descargaron 4 tablas para Power BI:\n- T_PagosValidados.csv\n- T_Empresas.csv\n- T_Ciudades.csv\n- T_TipoPago.csv');
+
+        function updateLastUpdate() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = 
+                `Última actualización: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
         }
-        
-        // Función auxiliar para descargar CSV
-        function downloadCSVFile(content, filename) {
-            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-CO');
         }
-        
-        // Limpiar filtros
-        function clearFilters() {
-            document.getElementById('empresaFilter').value = '';
-            document.getElementById('tipoPagoFilter').value = '';
-            document.getElementById('usuarioFilter').value = '';
-            document.getElementById('ciudadFilter').value = '';
+
+        function exportToExcel() {
+            const worksheet = XLSX.utils.json_to_sheet(filteredData.map(item => ({
+                'Documento': item.Documento,
+                'Nombre y Apellidos': item.NombreApellidos,
+                'Autorización': item.NombreAutorizacion,
+                'Empresa': item.NombreEmpresa,
+                'ID Tarjeta': item.IdTarjeta,
+                'Fecha Inicio': formatDate(item.FechaInicio),
+                'Fecha Fin': formatDate(item.FechaFin),
+                'Estado': item.EstadoCalculado,
+                'Teléfono': item.Telefono,
+                'Email': item.Email,
+                'Placas': item.Placas
+            })));
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Personas Autorizadas');
             
-            // Restablecer fechas
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            document.getElementById('fechaInicial').value = firstDay.toISOString().split('T')[0];
-            document.getElementById('fechaFinal').value = today.toISOString().split('T')[0];
-            
-            // Ocultar resultados
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('reportSection').style.display = 'none';
+            const fileName = `personas_autorizadas_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
         }
-        
-        // Inicializar la aplicación
-        initializeForm();
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4');
+
+            // Título
+            doc.setFontSize(16);
+            doc.text('Reporte de Personas Autorizadas', 20, 20);
+            
+            // Fecha
+            doc.setFontSize(10);
+            doc.text(`Generado el: ${new Date().toLocaleDateString()}`, 20, 30);
+
+            // Tabla
+            const tableData = filteredData.map(item => [
+                item.Documento,
+                item.NombreApellidos,
+                item.NombreAutorizacion,
+                item.NombreEmpresa,
+                item.IdTarjeta,
+                formatDate(item.FechaInicio),
+                formatDate(item.FechaFin),
+                item.EstadoCalculado,
+                item.Telefono || '',
+                item.Placas || ''
+            ]);
+
+            doc.autoTable({
+                head: [['Documento', 'Nombre', 'Autorización', 'Empresa', 'Tarjeta', 'F. Inicio', 'F. Fin', 'Estado', 'Teléfono', 'Placas']],
+                body: tableData,
+                startY: 40,
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2
+                },
+                headStyles: {
+                    fillColor: [248, 249, 250],
+                    textColor: [51, 51, 51]
+                }
+            });
+
+            const fileName = `personas_autorizadas_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
+        }
+
+        // Event listeners para filtros
+        document.getElementById('fechaInicio').addEventListener('change', applyFilters);
+        document.getElementById('fechaFin').addEventListener('change', applyFilters);
+        document.getElementById('estado').addEventListener('change', applyFilters);
+        document.getElementById('empresa').addEventListener('change', applyFilters);
+        document.getElementById('documento').addEventListener('input', applyFilters);
+        document.getElementById('nombre').addEventListener('input', applyFilters);
+        document.getElementById('autorizacion').addEventListener('change', applyFilters);
+
+        // Cargar datos al iniciar
+        window.addEventListener('load', loadData);
     </script>
 </body>
 </html>
